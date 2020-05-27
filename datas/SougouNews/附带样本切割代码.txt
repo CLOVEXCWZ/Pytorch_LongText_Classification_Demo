@@ -1,0 +1,17 @@
+
+import pandas as pd
+path = os.path.join(sougou_news_dir, "摘取四种样本均衡样本.csv")
+df = pd.read_csv(path)
+df['content_len'] = df['content'].map(lambda x: len(str(x)))
+df['contenttitle_len'] = df['contenttitle'].map(lambda x: len(str(x)))
+df = df.dropna()
+df = df.sample(frac=1).reset_index(drop=True)
+df['type'] = df['type'].map({'sports':0, 'news':1, 'house':2, 'business':3})
+df['content'] = df['content'].map(lambda x : str(x).replace('\n', " "))
+df.describe()
+train_df = df[30000:][['content', 'type']]
+dev_df = df[:30000][['content', 'type']]
+test_df = dev_df[:500][['content', 'type']]
+train_df.to_csv(sougou_train_path, index=False, header=False, sep='\t')
+dev_df.to_csv(sougou_dev_path, index=False, header=False, sep='\t')
+test_df.to_csv(test_data_path, index=False, header=False, sep='\t')
